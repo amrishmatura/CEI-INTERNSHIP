@@ -7,7 +7,7 @@ This project focuses on data cleaning, preprocessing, and exploratory data analy
 ## Objectives
 
 - Load the shopping dataset
-- Explore the dataset structure and characteristics
+- Explore the dataset structure & characteristics
 - Handle missing values
 - Remove duplicate records
 - Clean and preprocess the data
@@ -17,10 +17,10 @@ This project focuses on data cleaning, preprocessing, and exploratory data analy
 ## Project Structure
 
 ```
-CEI INTERNSHIP/
-├── Python_Pandas_Shopping_Analysis.ipynb
-├── shopping_data.csv
-├── shopping_cleaned.csv
+CEI INTERNSHIP
+├── Python_Shopping_Analysis.ipynb
+├── Ordered Data.csv
+├── Ordered cleaned Data.csv
 └── README.md
 ```
 
@@ -29,16 +29,15 @@ CEI INTERNSHIP/
 - Python
 - Pandas
 - NumPy
-- Jupyter Notebook
-- Matplotlib / Seaborn (for visualizations)
+- Jupyter Noteboo
 
 ## Files Description
 
 | File | Description |
 |------|-------------|
-| `Python_Pandas_Shopping_Analysis.ipynb` | Jupyter Notebook containing the complete implementation and analysis |
-| `shopping_data.csv` | Original shopping dataset (raw data) |
-| `shopping_cleaned.csv` | Cleaned dataset generated after preprocessing |
+| `Python_Shopping_Analysis.ipynb` | Jupyter Notebook containing the complete implementation and analysis |
+| `Ordered Data.csv` | Original shopping dataset (raw data) |
+| `Ordered cleaned Data.csv` | Cleaned dataset generated after preprocessing |
 
 ## Tasks Performed
 
@@ -48,14 +47,13 @@ CEI INTERNSHIP/
 - Removed duplicate records
 - Cleaned and preprocessed the dataset
 - Performed exploratory data analysis with visualizations
-- Exported the cleaned dataset as `shopping_cleaned.csv`
+- Exported the cleaned dataset as `Ordered cleaned Data.csv`
 
 ## Requirements
 
 - Python 3.8 or higher
 - pandas
 - numpy
-- matplotlib or seaborn
 - Jupyter / JupyterLab
 
 ## How to Run
@@ -63,13 +61,13 @@ CEI INTERNSHIP/
 1. Install required libraries:
 
 ```bash
-pip install pandas numpy matplotlib seaborn jupyter
+pip install pandas numpy jupyter
 ```
 
 2. Launch Jupyter Notebook:
 
 ```bash
-jupyter notebook Python_Pandas_Shopping_Analysis.ipynb
+jupyter notebook Python_Shopping_Analysis.ipynb
 ```
 
 3. Run all cells sequentially to reproduce the analysis and generate the cleaned dataset.
@@ -78,16 +76,16 @@ jupyter notebook Python_Pandas_Shopping_Analysis.ipynb
 
 After running the notebook, the cleaned dataset is generated as:
 
-- `shopping_cleaned.csv` — preprocessed data ready for analysis or modeling
+- `Ordered Data.csv` — preprocessed data ready for analysis or modeling
 
 ## Notes
 
-- Ensure both `shopping_data.csv` is in the same directory as the notebook before running
+- Ensure both `csv & ipynb file ` is in the same directory before running
 - For large datasets, consider optimizing memory usage or sampling for quick iteration
 - Review the notebook for detailed comments on each preprocessing step
 
-## Author
 
-Amrish Matura  
-Assignment: Python Pandas Shopping Analysis  
-CEI Internship Program
+## Improvements
+- Fixed dataset path issues.
+- Improved notebook compatibility.
+- Cleaner workflow and documentation.
