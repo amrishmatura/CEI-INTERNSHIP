@@ -76,7 +76,7 @@ jupyter notebook Python_Shopping_Analysis.ipynb
 
 After running the notebook, the cleaned dataset is generated as:
 
-- `Ordered Data.csv` — preprocessed data ready for analysis or modeling
+- `Ordered cleaned Data.csv` — preprocessed data ready for analysis or modeling
 
 ## Notes
 
