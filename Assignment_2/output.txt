@@ -1,0 +1,801 @@
+--------------
+DROP TABLE IF EXISTS order_items
+--------------
+
+Query OK, 0 rows affected (0.05 sec)
+
+--------------
+DROP TABLE IF EXISTS orders
+--------------
+
+Query OK, 0 rows affected (0.02 sec)
+
+--------------
+DROP TABLE IF EXISTS products
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+
+--------------
+DROP TABLE IF EXISTS customers
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+
+--------------
+CREATE TABLE customers (
+    customer_id   INT            PRIMARY KEY,
+    first_name    VARCHAR(50)    NOT NULL,
+    last_name     VARCHAR(50)    NOT NULL,
+    email         VARCHAR(100)   UNIQUE NOT NULL,
+    city          VARCHAR(50)    NOT NULL,
+    state         VARCHAR(50)    NOT NULL,
+    join_date     DATE           NOT NULL,
+    is_premium    BOOLEAN        DEFAULT FALSE
+)
+--------------
+
+Query OK, 0 rows affected (0.04 sec)
+
+--------------
+CREATE TABLE products (
+    product_id    INT            PRIMARY KEY,
+    product_name  VARCHAR(100)   NOT NULL,
+    category      VARCHAR(50)    NOT NULL,
+    brand         VARCHAR(50)    NOT NULL,
+    unit_price    DECIMAL(10,2)  NOT NULL  CHECK (unit_price > 0),
+    stock_qty     INT            NOT NULL  DEFAULT 0  CHECK (stock_qty >= 0)
+)
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+
+--------------
+CREATE TABLE orders (
+    order_id      INT            PRIMARY KEY,
+    customer_id   INT            NOT NULL,
+    order_date    DATE           NOT NULL,
+    status        VARCHAR(20)    NOT NULL  DEFAULT 'Pending'
+                                 CHECK (status IN ('Pending','Shipped','Delivered','Cancelled')),
+    total_amount  DECIMAL(12,2)  NOT NULL  CHECK (total_amount >= 0),
+
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+)
+--------------
+
+Query OK, 0 rows affected (0.02 sec)
+
+--------------
+CREATE TABLE order_items (
+    item_id       INT            PRIMARY KEY,
+    order_id      INT            NOT NULL,
+    product_id    INT            NOT NULL,
+    quantity      INT            NOT NULL  CHECK (quantity > 0),
+    unit_price    DECIMAL(10,2)  NOT NULL  CHECK (unit_price > 0),
+    discount_pct  DECIMAL(5,2)   DEFAULT 0 CHECK (discount_pct BETWEEN 0 AND 100),
+
+    FOREIGN KEY (order_id)   REFERENCES orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+)
+--------------
+
+Query OK, 0 rows affected (0.02 sec)
+
+--------------
+CREATE INDEX idx_customers_city  ON customers(city)
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+CREATE INDEX idx_customers_state ON customers(state)
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+CREATE INDEX idx_customers_join_date ON customers(join_date)
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+CREATE INDEX idx_orders_date   ON orders(order_date)
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+CREATE INDEX idx_orders_status ON orders(status)
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+CREATE INDEX idx_products_category ON products(category)
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+INSERT INTO customers VALUES
+(101, 'Aarav',   'Sharma', 'aarav.s@email.com',   'Mumbai',    'Maharashtra',  '2024-01-15', TRUE),
+(102, 'Priya',   'Patel',  'priya.p@email.com',   'Ahmedabad', 'Gujarat',      '2024-02-20', FALSE),
+(103, 'Rohan',   'Gupta',  'rohan.g@email.com',   'Delhi',     'Delhi',        '2024-03-10', TRUE),
+(104, 'Sneha',   'Reddy',  'sneha.r@email.com',   'Hyderabad', 'Telangana',    '2024-04-05', FALSE),
+(105, 'Vikram',  'Singh',  'vikram.s@email.com',   'Jaipur',    'Rajasthan',    '2024-05-12', TRUE),
+(106, 'Ananya',  'Iyer',   'ananya.i@email.com',   'Chennai',   'Tamil Nadu',   '2024-06-18', FALSE),
+(107, 'Karan',   'Mehta',  'karan.m@email.com',    'Pune',      'Maharashtra',  '2024-07-22', TRUE),
+(108, 'Divya',   'Nair',   'divya.n@email.com',    'Kochi',     'Kerala',       '2024-08-30', FALSE)
+--------------
+
+Query OK, 8 rows affected (0.00 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+--------------
+INSERT INTO products VALUES
+(201, 'Wireless Earbuds',      'Electronics', 'BoAt',         1499.00, 250),
+(202, 'Cotton T-Shirt',        'Clothing',    'Levis',         799.00, 500),
+(203, 'Smart Watch',           'Electronics', 'Noise',        2999.00, 150),
+(204, 'Running Shoes',         'Clothing',    'Nike',         4599.00, 120),
+(205, 'Bluetooth Speaker',     'Electronics', 'JBL',          3499.00, 200),
+(206, 'Bedsheet Set',          'Home',        'Spaces',       1299.00, 300),
+(207, 'Laptop Stand',          'Electronics', 'AmazonBasics',  899.00, 180),
+(208, 'Cushion Covers (Set)',  'Home',        'HomeCenter',    599.00, 400)
+--------------
+
+Query OK, 8 rows affected (0.00 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+--------------
+INSERT INTO orders VALUES
+(1001, 101, '2024-08-01', 'Delivered',  2998.00),
+(1002, 102, '2024-08-05', 'Delivered',  4599.00),
+(1003, 103, '2024-08-10', 'Shipped',    1499.00),
+(1004, 104, '2024-08-12', 'Pending',    3798.00),
+(1005, 105, '2024-08-15', 'Delivered',  5998.00),
+(1006, 106, '2024-08-18', 'Cancelled',   799.00),
+(1007, 107, '2024-08-20', 'Shipped',    6998.00),
+(1008, 108, '2024-08-22', 'Delivered',  1299.00),
+(1009, 101, '2024-08-25', 'Pending',    4498.00),
+(1010, 103, '2024-09-01', 'Delivered',   899.00)
+--------------
+
+Query OK, 10 rows affected (0.00 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+--------------
+INSERT INTO order_items VALUES
+(1,  1001, 201, 2, 1499.00,  0.00),   
+(2,  1002, 204, 1, 4599.00,  0.00),   
+(3,  1003, 201, 1, 1499.00,  5.00),   
+(4,  1004, 203, 1, 2999.00,  0.00),   
+(5,  1004, 202, 1,  799.00,  0.00),   
+(6,  1005, 203, 2, 2999.00,  0.00),   
+(7,  1006, 202, 1,  799.00,  0.00),   
+(8,  1007, 205, 2, 3499.00,  5.00),   
+(9,  1008, 206, 1, 1299.00,  0.00),   
+(10, 1009, 201, 1, 1499.00,  0.00),   
+(11, 1009, 203, 1, 2999.00, 10.00),   
+(12, 1010, 207, 1,  899.00,  0.00),   
+(13, 1007, 208, 3,  599.00,  0.00),   
+(14, 1005, 207, 1,  899.00, 10.00),   
+(15, 1002, 206, 1, 1299.00, 10.00)
+--------------
+
+Query OK, 15 rows affected (0.00 sec)
+Records: 15  Duplicates: 0  Warnings: 0
+
+--------------
+SELECT 'customers'   AS table_name, COUNT(*) AS row_count FROM customers
+UNION ALL
+SELECT 'products',   COUNT(*) FROM products
+UNION ALL
+SELECT 'orders',     COUNT(*) FROM orders
+UNION ALL
+SELECT 'order_items', COUNT(*) FROM order_items
+--------------
+
++-------------+-----------+
+| table_name  | row_count |
++-------------+-----------+
+| customers   |         8 |
+| products    |         8 |
+| orders      |        10 |
+| order_items |        15 |
++-------------+-----------+
+4 rows in set (0.00 sec)
+
+--------------
+SELECT * FROM customers
+--------------
+
++-------------+------------+-----------+--------------------+-----------+-------------+------------+------------+
+| customer_id | first_name | last_name | email              | city      | state       | join_date  | is_premium |
++-------------+------------+-----------+--------------------+-----------+-------------+------------+------------+
+|         101 | Aarav      | Sharma    | aarav.s@email.com  | Mumbai    | Maharashtra | 2024-01-15 |          1 |
+|         102 | Priya      | Patel     | priya.p@email.com  | Ahmedabad | Gujarat     | 2024-02-20 |          0 |
+|         103 | Rohan      | Gupta     | rohan.g@email.com  | Delhi     | Delhi       | 2024-03-10 |          1 |
+|         104 | Sneha      | Reddy     | sneha.r@email.com  | Hyderabad | Telangana   | 2024-04-05 |          0 |
+|         105 | Vikram     | Singh     | vikram.s@email.com | Jaipur    | Rajasthan   | 2024-05-12 |          1 |
+|         106 | Ananya     | Iyer      | ananya.i@email.com | Chennai   | Tamil Nadu  | 2024-06-18 |          0 |
+|         107 | Karan      | Mehta     | karan.m@email.com  | Pune      | Maharashtra | 2024-07-22 |          1 |
+|         108 | Divya      | Nair      | divya.n@email.com  | Kochi     | Kerala      | 2024-08-30 |          0 |
++-------------+------------+-----------+--------------------+-----------+-------------+------------+------------+
+8 rows in set (0.00 sec)
+
+--------------
+SELECT first_name, last_name, city
+FROM customers
+--------------
+
++------------+-----------+-----------+
+| first_name | last_name | city      |
++------------+-----------+-----------+
+| Aarav      | Sharma    | Mumbai    |
+| Priya      | Patel     | Ahmedabad |
+| Rohan      | Gupta     | Delhi     |
+| Sneha      | Reddy     | Hyderabad |
+| Vikram     | Singh     | Jaipur    |
+| Ananya     | Iyer      | Chennai   |
+| Karan      | Mehta     | Pune      |
+| Divya      | Nair      | Kochi     |
++------------+-----------+-----------+
+8 rows in set (0.00 sec)
+
+--------------
+SELECT DISTINCT category
+FROM products
+--------------
+
++-------------+
+| category    |
++-------------+
+| Clothing    |
+| Electronics |
+| Home        |
++-------------+
+3 rows in set (0.00 sec)
+
+--------------
+SELECT * FROM customers  WHERE customer_id IS NULL
+--------------
+
+Empty set (0.00 sec)
+
+--------------
+SELECT * FROM products   WHERE product_id  IS NULL
+--------------
+
+Empty set (0.00 sec)
+
+--------------
+SELECT * FROM orders     WHERE order_id    IS NULL
+--------------
+
+Empty set (0.00 sec)
+
+--------------
+SELECT * FROM order_items WHERE item_id    IS NULL
+--------------
+
+Empty set (0.00 sec)
+
+--------------
+SELECT *
+FROM orders
+WHERE status = 'Delivered'
+--------------
+
++----------+-------------+------------+-----------+--------------+
+| order_id | customer_id | order_date | status    | total_amount |
++----------+-------------+------------+-----------+--------------+
+|     1001 |         101 | 2024-08-01 | Delivered |      2998.00 |
+|     1002 |         102 | 2024-08-05 | Delivered |      4599.00 |
+|     1005 |         105 | 2024-08-15 | Delivered |      5998.00 |
+|     1008 |         108 | 2024-08-22 | Delivered |      1299.00 |
+|     1010 |         103 | 2024-09-01 | Delivered |       899.00 |
++----------+-------------+------------+-----------+--------------+
+5 rows in set (0.00 sec)
+
+--------------
+SELECT *
+FROM products
+WHERE category = 'Electronics'
+  AND unit_price > 2000
+--------------
+
++------------+-------------------+-------------+-------+------------+-----------+
+| product_id | product_name      | category    | brand | unit_price | stock_qty |
++------------+-------------------+-------------+-------+------------+-----------+
+|        203 | Smart Watch       | Electronics | Noise |    2999.00 |       150 |
+|        205 | Bluetooth Speaker | Electronics | JBL   |    3499.00 |       200 |
++------------+-------------------+-------------+-------+------------+-----------+
+2 rows in set (0.00 sec)
+
+--------------
+SELECT *
+FROM customers
+WHERE YEAR(join_date) = 2024
+  AND state = 'Maharashtra'
+--------------
+
++-------------+------------+-----------+-------------------+--------+-------------+------------+------------+
+| customer_id | first_name | last_name | email             | city   | state       | join_date  | is_premium |
++-------------+------------+-----------+-------------------+--------+-------------+------------+------------+
+|         101 | Aarav      | Sharma    | aarav.s@email.com | Mumbai | Maharashtra | 2024-01-15 |          1 |
+|         107 | Karan      | Mehta     | karan.m@email.com | Pune   | Maharashtra | 2024-07-22 |          1 |
++-------------+------------+-----------+-------------------+--------+-------------+------------+------------+
+2 rows in set (0.00 sec)
+
+--------------
+SELECT *
+FROM orders
+WHERE order_date BETWEEN '2024-08-10' AND '2024-08-25'
+  AND status != 'Cancelled'
+--------------
+
++----------+-------------+------------+-----------+--------------+
+| order_id | customer_id | order_date | status    | total_amount |
++----------+-------------+------------+-----------+--------------+
+|     1003 |         103 | 2024-08-10 | Shipped   |      1499.00 |
+|     1004 |         104 | 2024-08-12 | Pending   |      3798.00 |
+|     1005 |         105 | 2024-08-15 | Delivered |      5998.00 |
+|     1007 |         107 | 2024-08-20 | Shipped   |      6998.00 |
+|     1008 |         108 | 2024-08-22 | Delivered |      1299.00 |
+|     1009 |         101 | 2024-08-25 | Pending   |      4498.00 |
++----------+-------------+------------+-----------+--------------+
+6 rows in set (0.00 sec)
+
+--------------
+SELECT order_id, customer_id, order_date, total_amount
+FROM orders
+WHERE order_date = '2024-08-15'
+--------------
+
++----------+-------------+------------+--------------+
+| order_id | customer_id | order_date | total_amount |
++----------+-------------+------------+--------------+
+|     1005 |         105 | 2024-08-15 |      5998.00 |
++----------+-------------+------------+--------------+
+1 row in set (0.00 sec)
+
+--------------
+SELECT order_id, order_date, total_amount
+FROM orders
+WHERE order_date BETWEEN '2024-08-01' AND '2024-08-31'
+ORDER BY order_date
+--------------
+
++----------+------------+--------------+
+| order_id | order_date | total_amount |
++----------+------------+--------------+
+|     1001 | 2024-08-01 |      2998.00 |
+|     1002 | 2024-08-05 |      4599.00 |
+|     1003 | 2024-08-10 |      1499.00 |
+|     1004 | 2024-08-12 |      3798.00 |
+|     1005 | 2024-08-15 |      5998.00 |
+|     1006 | 2024-08-18 |       799.00 |
+|     1007 | 2024-08-20 |      6998.00 |
+|     1008 | 2024-08-22 |      1299.00 |
+|     1009 | 2024-08-25 |      4498.00 |
++----------+------------+--------------+
+9 rows in set (0.00 sec)
+
+--------------
+SELECT *
+FROM customers
+WHERE join_date >= '2024-01-01'
+  AND join_date <  '2025-01-01'
+--------------
+
++-------------+------------+-----------+--------------------+-----------+-------------+------------+------------+
+| customer_id | first_name | last_name | email              | city      | state       | join_date  | is_premium |
++-------------+------------+-----------+--------------------+-----------+-------------+------------+------------+
+|         101 | Aarav      | Sharma    | aarav.s@email.com  | Mumbai    | Maharashtra | 2024-01-15 |          1 |
+|         102 | Priya      | Patel     | priya.p@email.com  | Ahmedabad | Gujarat     | 2024-02-20 |          0 |
+|         103 | Rohan      | Gupta     | rohan.g@email.com  | Delhi     | Delhi       | 2024-03-10 |          1 |
+|         104 | Sneha      | Reddy     | sneha.r@email.com  | Hyderabad | Telangana   | 2024-04-05 |          0 |
+|         105 | Vikram     | Singh     | vikram.s@email.com | Jaipur    | Rajasthan   | 2024-05-12 |          1 |
+|         106 | Ananya     | Iyer      | ananya.i@email.com | Chennai   | Tamil Nadu  | 2024-06-18 |          0 |
+|         107 | Karan      | Mehta     | karan.m@email.com  | Pune      | Maharashtra | 2024-07-22 |          1 |
+|         108 | Divya      | Nair      | divya.n@email.com  | Kochi     | Kerala      | 2024-08-30 |          0 |
++-------------+------------+-----------+--------------------+-----------+-------------+------------+------------+
+8 rows in set (0.00 sec)
+
+--------------
+SELECT COUNT(*) AS total_orders
+FROM orders
+--------------
+
++--------------+
+| total_orders |
++--------------+
+|           10 |
++--------------+
+1 row in set (0.00 sec)
+
+--------------
+SELECT ROUND(SUM(total_amount), 2) AS total_revenue
+FROM orders
+WHERE status = 'Delivered'
+--------------
+
++---------------+
+| total_revenue |
++---------------+
+|      15793.00 |
++---------------+
+1 row in set (0.00 sec)
+
+--------------
+SELECT
+    category,
+    ROUND(AVG(unit_price), 2) AS avg_price
+FROM products
+GROUP BY category
+--------------
+
++-------------+-----------+
+| category    | avg_price |
++-------------+-----------+
+| Clothing    |   2699.00 |
+| Electronics |   2224.00 |
+| Home        |    949.00 |
++-------------+-----------+
+3 rows in set (0.00 sec)
+
+--------------
+SELECT
+    status,
+    COUNT(*)                    AS order_count,
+    ROUND(SUM(total_amount), 2) AS total_revenue
+FROM orders
+GROUP BY status
+ORDER BY total_revenue DESC
+--------------
+
++-----------+-------------+---------------+
+| status    | order_count | total_revenue |
++-----------+-------------+---------------+
+| Delivered |           5 |      15793.00 |
+| Shipped   |           2 |       8497.00 |
+| Pending   |           2 |       8296.00 |
+| Cancelled |           1 |        799.00 |
++-----------+-------------+---------------+
+4 rows in set (0.00 sec)
+
+--------------
+SELECT
+    category,
+    MAX(unit_price) AS most_expensive,
+    MIN(unit_price) AS cheapest
+FROM products
+GROUP BY category
+--------------
+
++-------------+----------------+----------+
+| category    | most_expensive | cheapest |
++-------------+----------------+----------+
+| Clothing    |        4599.00 |   799.00 |
+| Electronics |        3499.00 |   899.00 |
+| Home        |        1299.00 |   599.00 |
++-------------+----------------+----------+
+3 rows in set (0.00 sec)
+
+--------------
+SELECT
+    category,
+    ROUND(AVG(unit_price), 2) AS avg_price
+FROM products
+GROUP BY category
+HAVING AVG(unit_price) > 2000
+--------------
+
++-------------+-----------+
+| category    | avg_price |
++-------------+-----------+
+| Clothing    |   2699.00 |
+| Electronics |   2224.00 |
++-------------+-----------+
+2 rows in set (0.00 sec)
+
+--------------
+SELECT
+    o.order_id,
+    o.order_date,
+    c.first_name,
+    c.last_name,
+    o.total_amount
+FROM orders o
+INNER JOIN customers c ON o.customer_id = c.customer_id
+--------------
+
++----------+------------+------------+-----------+--------------+
+| order_id | order_date | first_name | last_name | total_amount |
++----------+------------+------------+-----------+--------------+
+|     1001 | 2024-08-01 | Aarav      | Sharma    |      2998.00 |
+|     1009 | 2024-08-25 | Aarav      | Sharma    |      4498.00 |
+|     1002 | 2024-08-05 | Priya      | Patel     |      4599.00 |
+|     1003 | 2024-08-10 | Rohan      | Gupta     |      1499.00 |
+|     1010 | 2024-09-01 | Rohan      | Gupta     |       899.00 |
+|     1004 | 2024-08-12 | Sneha      | Reddy     |      3798.00 |
+|     1005 | 2024-08-15 | Vikram     | Singh     |      5998.00 |
+|     1006 | 2024-08-18 | Ananya     | Iyer      |       799.00 |
+|     1007 | 2024-08-20 | Karan      | Mehta     |      6998.00 |
+|     1008 | 2024-08-22 | Divya      | Nair      |      1299.00 |
++----------+------------+------------+-----------+--------------+
+10 rows in set (0.00 sec)
+
+--------------
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    o.order_id,
+    o.order_date,
+    o.total_amount
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+ORDER BY c.customer_id
+--------------
+
++-------------+------------+-----------+----------+------------+--------------+
+| customer_id | first_name | last_name | order_id | order_date | total_amount |
++-------------+------------+-----------+----------+------------+--------------+
+|         101 | Aarav      | Sharma    |     1001 | 2024-08-01 |      2998.00 |
+|         101 | Aarav      | Sharma    |     1009 | 2024-08-25 |      4498.00 |
+|         102 | Priya      | Patel     |     1002 | 2024-08-05 |      4599.00 |
+|         103 | Rohan      | Gupta     |     1003 | 2024-08-10 |      1499.00 |
+|         103 | Rohan      | Gupta     |     1010 | 2024-09-01 |       899.00 |
+|         104 | Sneha      | Reddy     |     1004 | 2024-08-12 |      3798.00 |
+|         105 | Vikram     | Singh     |     1005 | 2024-08-15 |      5998.00 |
+|         106 | Ananya     | Iyer      |     1006 | 2024-08-18 |       799.00 |
+|         107 | Karan      | Mehta     |     1007 | 2024-08-20 |      6998.00 |
+|         108 | Divya      | Nair      |     1008 | 2024-08-22 |      1299.00 |
++-------------+------------+-----------+----------+------------+--------------+
+10 rows in set (0.00 sec)
+
+--------------
+SELECT
+    o.order_id,
+    p.product_name,
+    oi.quantity,
+    oi.unit_price,
+    oi.discount_pct
+FROM orders o
+INNER JOIN order_items oi ON o.order_id = oi.order_id
+INNER JOIN products p     ON oi.product_id = p.product_id
+ORDER BY o.order_id, oi.item_id
+--------------
+
++----------+----------------------+----------+------------+--------------+
+| order_id | product_name         | quantity | unit_price | discount_pct |
++----------+----------------------+----------+------------+--------------+
+|     1001 | Wireless Earbuds     |        2 |    1499.00 |         0.00 |
+|     1002 | Running Shoes        |        1 |    4599.00 |         0.00 |
+|     1002 | Bedsheet Set         |        1 |    1299.00 |        10.00 |
+|     1003 | Wireless Earbuds     |        1 |    1499.00 |         5.00 |
+|     1004 | Smart Watch          |        1 |    2999.00 |         0.00 |
+|     1004 | Cotton T-Shirt       |        1 |     799.00 |         0.00 |
+|     1005 | Smart Watch          |        2 |    2999.00 |         0.00 |
+|     1005 | Laptop Stand         |        1 |     899.00 |        10.00 |
+|     1006 | Cotton T-Shirt       |        1 |     799.00 |         0.00 |
+|     1007 | Bluetooth Speaker    |        2 |    3499.00 |         5.00 |
+|     1007 | Cushion Covers (Set) |        3 |     599.00 |         0.00 |
+|     1008 | Bedsheet Set         |        1 |    1299.00 |         0.00 |
+|     1009 | Wireless Earbuds     |        1 |    1499.00 |         0.00 |
+|     1009 | Smart Watch          |        1 |    2999.00 |        10.00 |
+|     1010 | Laptop Stand         |        1 |     899.00 |         0.00 |
++----------+----------------------+----------+------------+--------------+
+15 rows in set (0.00 sec)
+
+--------------
+SELECT c.first_name, c.last_name, o.order_id, o.total_amount
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+--------------
+
++------------+-----------+----------+--------------+
+| first_name | last_name | order_id | total_amount |
++------------+-----------+----------+--------------+
+| Aarav      | Sharma    |     1001 |      2998.00 |
+| Aarav      | Sharma    |     1009 |      4498.00 |
+| Priya      | Patel     |     1002 |      4599.00 |
+| Rohan      | Gupta     |     1003 |      1499.00 |
+| Rohan      | Gupta     |     1010 |       899.00 |
+| Sneha      | Reddy     |     1004 |      3798.00 |
+| Vikram     | Singh     |     1005 |      5998.00 |
+| Ananya     | Iyer      |     1006 |       799.00 |
+| Karan      | Mehta     |     1007 |      6998.00 |
+| Divya      | Nair      |     1008 |      1299.00 |
++------------+-----------+----------+--------------+
+10 rows in set (0.00 sec)
+
+--------------
+SELECT c.first_name, c.last_name, o.order_id, o.total_amount
+FROM customers c
+RIGHT JOIN orders o ON c.customer_id = o.customer_id
+--------------
+
++------------+-----------+----------+--------------+
+| first_name | last_name | order_id | total_amount |
++------------+-----------+----------+--------------+
+| Aarav      | Sharma    |     1001 |      2998.00 |
+| Priya      | Patel     |     1002 |      4599.00 |
+| Rohan      | Gupta     |     1003 |      1499.00 |
+| Sneha      | Reddy     |     1004 |      3798.00 |
+| Vikram     | Singh     |     1005 |      5998.00 |
+| Ananya     | Iyer      |     1006 |       799.00 |
+| Karan      | Mehta     |     1007 |      6998.00 |
+| Divya      | Nair      |     1008 |      1299.00 |
+| Aarav      | Sharma    |     1009 |      4498.00 |
+| Rohan      | Gupta     |     1010 |       899.00 |
++------------+-----------+----------+--------------+
+10 rows in set (0.00 sec)
+
+--------------
+SELECT
+    product_name,
+    unit_price,
+    CASE
+        WHEN unit_price < 1000                      THEN 'Budget'
+        WHEN unit_price BETWEEN 1000 AND 3000       THEN 'Mid-Range'
+        WHEN unit_price > 3000                      THEN 'Premium'
+    END AS price_tier
+FROM products
+ORDER BY unit_price
+--------------
+
++----------------------+------------+------------+
+| product_name         | unit_price | price_tier |
++----------------------+------------+------------+
+| Cushion Covers (Set) |     599.00 | Budget     |
+| Cotton T-Shirt       |     799.00 | Budget     |
+| Laptop Stand         |     899.00 | Budget     |
+| Bedsheet Set         |    1299.00 | Mid-Range  |
+| Wireless Earbuds     |    1499.00 | Mid-Range  |
+| Smart Watch          |    2999.00 | Mid-Range  |
+| Bluetooth Speaker    |    3499.00 | Premium    |
+| Running Shoes        |    4599.00 | Premium    |
++----------------------+------------+------------+
+8 rows in set (0.00 sec)
+
+--------------
+SELECT
+    SUM(CASE WHEN status = 'Delivered' THEN 1 ELSE 0 END) AS delivered_count,
+    SUM(CASE WHEN status != 'Delivered' THEN 1 ELSE 0 END) AS not_delivered_count
+FROM orders
+--------------
+
++-----------------+---------------------+
+| delivered_count | not_delivered_count |
++-----------------+---------------------+
+|               5 |                   5 |
++-----------------+---------------------+
+1 row in set (0.00 sec)
+
+--------------
+START TRANSACTION
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+INSERT INTO orders (order_id, customer_id, order_date, status, total_amount)
+VALUES (1011, 102, CURDATE(), 'Pending', 1598.00)
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO order_items (item_id, order_id, product_id, quantity, unit_price, discount_pct)
+VALUES (16, 1011, 201, 1, 1499.00, 0.00)
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO order_items (item_id, order_id, product_id, quantity, unit_price, discount_pct)
+VALUES (17, 1011, 208, 1, 599.00, 10.00)
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+UPDATE products SET stock_qty = stock_qty - 1 WHERE product_id = 201
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+--------------
+UPDATE products SET stock_qty = stock_qty - 1 WHERE product_id = 208
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+--------------
+COMMIT
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+SELECT 'New Order Created:' AS info
+--------------
+
++--------------------+
+| info               |
++--------------------+
+| New Order Created: |
++--------------------+
+1 row in set (0.00 sec)
+
+--------------
+SELECT * FROM orders WHERE order_id = 1011
+--------------
+
++----------+-------------+------------+---------+--------------+
+| order_id | customer_id | order_date | status  | total_amount |
++----------+-------------+------------+---------+--------------+
+|     1011 |         102 | 2026-07-18 | Pending |      1598.00 |
++----------+-------------+------------+---------+--------------+
+1 row in set (0.00 sec)
+
+--------------
+SELECT 'Order Items Added:' AS info
+--------------
+
++--------------------+
+| info               |
++--------------------+
+| Order Items Added: |
++--------------------+
+1 row in set (0.00 sec)
+
+--------------
+SELECT * FROM order_items WHERE order_id = 1011
+--------------
+
++---------+----------+------------+----------+------------+--------------+
+| item_id | order_id | product_id | quantity | unit_price | discount_pct |
++---------+----------+------------+----------+------------+--------------+
+|      16 |     1011 |        201 |        1 |    1499.00 |         0.00 |
+|      17 |     1011 |        208 |        1 |     599.00 |        10.00 |
++---------+----------+------------+----------+------------+--------------+
+2 rows in set (0.00 sec)
+
+--------------
+SELECT 'Updated Stock Quantities:' AS info
+--------------
+
++---------------------------+
+| info                      |
++---------------------------+
+| Updated Stock Quantities: |
++---------------------------+
+1 row in set (0.00 sec)
+
+--------------
+SELECT product_id, product_name, stock_qty
+FROM products
+WHERE product_id IN (201, 208)
+--------------
+
++------------+----------------------+-----------+
+| product_id | product_name         | stock_qty |
++------------+----------------------+-----------+
+|        201 | Wireless Earbuds     |       249 |
+|        208 | Cushion Covers (Set) |       399 |
++------------+----------------------+-----------+
+2 rows in set (0.00 sec)
+
+Bye
