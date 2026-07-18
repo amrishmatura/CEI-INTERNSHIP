@@ -1,13 +1,10 @@
-# Assignment 5 - Spark Week 5
-
-This folder contains the Week-5 Spark fundamentals assignment using the Superstore dataset.
-
+# Week 5 
 ## Contents
 
 - `spark.py` - runnable PySpark pipeline that loads `Assignment_3/superstore.csv`, cleans the data, and prints query results.
 - `Spark_Answers.md` - Spark concept answers and explanations for the current assignment questions.
 - `Output.md` - actual output produced by `spark.py`.
-- `superstore.csv` - the Superstore dataset used by the assignment.
+- `superstore.csv` - the Superstore dataset used in the assignment.
 
 ## Description
 
